@@ -1,0 +1,273 @@
+<div class="chatbot-container">
+  <div class="model-info-bar" *ngIf="modelName">
+    <div class="model-label">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="model-icon">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <span class="model-name">{{ modelName }}</span>
+      <span class="model-params">
+        <span class="param">Temp: {{ modelTemperature }}</span>
+        <span class="param-separator">•</span>
+        <span class="param">Max: {{ modelMaxTokens }} tokens</span>
+      </span>
+    </div>
+  </div>
+  <div class="chatbot-header">
+    <div class="header-content">
+      <div class="bot-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"></path>
+          <circle cx="9" cy="13" r="1"></circle>
+          <circle cx="15" cy="13" r="1"></circle>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2>AI Assistant</h2>
+        <span class="status">
+          <span class="status-dot"></span>
+          Online
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-body">
+    <div *ngIf="!response && !isLoading" class="welcome-message">
+      <div class="welcome-icon">💬</div>
+      <h3>How can I help you today?</h3>
+      <p>Send me a message and I'll respond right away</p>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-message">
+      <div class="loader"></div>
+      <p>Processing your request...</p>
+    </div>
+
+    <div *ngIf="response && !isLoading" class="messages">
+      <div class="message user-message">
+        <div class="message-content">
+          {{ message }}
+        </div>
+      </div>
+      <div class="message bot-message">
+        <div class="bot-avatar-small">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <circle cx="9" cy="9" r="1"></circle>
+            <circle cx="15" cy="9" r="1"></circle>
+          </svg>
+        </div>
+        <div class="message-content">
+          {{ response }}
+        </div>
+      </div>
+      
+      <!-- Token Counter Display -->
+      <div class="token-counter">
+        <div class="token-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="token-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span>Token Usage</span>
+        </div>
+        <div class="token-stats">
+          <div class="token-stat">
+            <span class="token-label">Prompt:</span>
+            <span class="token-value">{{ promptTokens }}</span>
+          </div>
+          <div class="token-stat">
+            <span class="token-label">Response:</span>
+            <span class="token-value">{{ responseTokens }}</span>
+          </div>
+          <div class="token-stat total">
+            <span class="token-label">Total:</span>
+            <span class="token-value">{{ totalTokens }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Simulator Panel -->
+      <div class="cost-simulator">
+        <div class="cost-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cost-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+          </svg>
+          <span>Cost Simulator</span>
+          <span class="cost-info">Calculate costs with different models</span>
+        </div>
+        <div class="model-buttons">
+          <button 
+            *ngFor="let modelKey of modelKeys" 
+            class="model-button"
+            [class.calculated]="calculatedCosts[modelKey] !== undefined"
+            (click)="calculateCostForModel(modelKey)">
+            <span class="model-button-name">{{ modelPricing[modelKey].name }}</span>
+            <span class="model-button-cost" *ngIf="calculatedCosts[modelKey] !== undefined">
+              ≈ ${{ calculatedCosts[modelKey].toFixed(6) }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <div class="input-controls">
+      <div class="model-selector">
+        <label for="provider-select">AI Provider:</label>
+        <select id="provider-select" [(ngModel)]="selectedProvider" (ngModelChange)="onProviderChange()" class="provider-dropdown">
+          <option value="claude">Claude</option>
+          <option value="openai">OpenAI</option>
+        </select>
+      </div>
+      <textarea [(ngModel)]="message"
+                placeholder="Type your message here..."
+                rows="1"
+                (keydown.enter)="handleEnter($any($event))"></textarea>
+      <button (click)="send()" [disabled]="!message || !message.trim()" class="send-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+        </svg>
+        <span>Send</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Word Comparison Section -->
+<div class="word-compare-container">
+  <div class="word-compare-header">
+    <div class="header-content">
+      <div class="compare-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h18v18H3V3z"></path>
+          <path d="M3 9h18M9 21V9"></path>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2>Word Similarity Analyzer</h2>
+        <span class="status">
+          <span class="status-dot"></span>
+          Compare Any Two Words
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="word-compare-body">
+    <div class="input-grid">
+      <div class="input-group">
+        <label class="word-label">First Word</label>
+        <input 
+          type="text" 
+          [(ngModel)]="word1"
+          placeholder="e.g., Dog"
+          class="word-input"
+          (keydown.enter)="compareWords()">
+      </div>
+      <div class="vs-divider">
+        <span class="vs-text">VS</span>
+      </div>
+      <div class="input-group">
+        <label class="word-label">Second Word</label>
+        <input 
+          type="text" 
+          [(ngModel)]="word2"
+          placeholder="e.g., Cat"
+          class="word-input"
+          (keydown.enter)="compareWords()">
+      </div>
+    </div>
+
+    <button 
+      (click)="compareWords()"
+      [disabled]="comparingWords || !word1 || !word2"
+      class="compare-action-button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M12 6v6l4 2"></path>
+      </svg>
+      <span>{{ comparingWords ? 'Analyzing...' : 'Compare Words' }}</span>
+    </button>
+
+    <div *ngIf="comparisonResult" class="comparison-result">
+      <div class="result-banner">
+        <div class="words-display">
+          <span class="word-badge word1">{{ comparisonResult.word1 }}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arrow-icon">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span class="word-badge word2">{{ comparisonResult.word2 }}</span>
+        </div>
+        
+        <div class="similarity-mega">
+          <div class="similarity-label">Semantic Similarity</div>
+          <div class="similarity-percentage" [style.color]="getSimilarityColor(comparisonResult.similarity)">
+            {{ comparisonResult.similarity }}
+          </div>
+          <div class="similarity-progress">
+            <div class="similarity-progress-fill" 
+                 [style.width]="comparisonResult.similarity"
+                 [style.background]="getSimilarityColor(comparisonResult.similarity)">
+            </div>
+          </div>
+          <div class="similarity-description">
+            {{ getSimilarityDescription(comparisonResult.similarity) }}
+          </div>
+        </div>
+      </div>
+
+      <div class="vectors-preview-section">
+        <div class="preview-card">
+          <h4>{{ comparisonResult.word1 }} Vector</h4>
+          <div class="vector-chips">
+            <span *ngFor="let val of comparisonResult.word1_preview" class="vector-chip">
+              {{ val }}
+            </span>
+          </div>
+        </div>
+        <div class="preview-card">
+          <h4>{{ comparisonResult.word2 }} Vector</h4>
+          <div class="vector-chips">
+            <span *ngFor="let val of comparisonResult.word2_preview" class="vector-chip">
+              {{ val }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Similarity Explanation Card -->
+      <div class="explanation-card" *ngIf="comparisonResult.similarityExplanation">
+        <div class="explanation-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="explanation-icon">
+            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3>Similarity Explanation</h3>
+        </div>
+        <div class="explanation-content">
+          <div class="explanation-emoji">💡</div>
+          <p class="explanation-text">{{ comparisonResult.similarityExplanation }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="comparisonError" class="error-banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>{{ comparisonError }}</span>
+    </div>
+  </div>
+</div>
+
+<app-embedding></app-embedding>

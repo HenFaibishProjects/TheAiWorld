@@ -1,0 +1,88 @@
+<div class="embedding-container">
+  <div class="embedding-header">
+    <div class="header-content">
+      <div class="embedding-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2>Embedding Viewer</h2>
+        <span class="status">
+          <span class="status-dot"></span>
+          Online
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="embedding-body">
+    <div class="welcome-message">
+      <div class="welcome-icon">📊</div>
+      <h3>How can I help you today?</h3>
+      <p>Send me a message and I'll respond right away</p>
+    </div>
+
+    <!-- PROVIDER DROPDOWN -->
+    <div class="model-selector">
+      <label class="input-label">Select Provider</label>
+      <select [(ngModel)]="provider" class="provider-dropdown">
+        <option value="openai">OpenAI</option>
+        <option value="nomic">Nomic</option>
+      </select>
+    </div>
+   
+
+
+
+    <div class="input-section">
+      <label class="input-label">Enter your text</label>
+      <textarea
+        [(ngModel)]="text"
+        placeholder="Write your text here…"
+        rows="4"
+        class="text-input"></textarea>
+    </div>
+
+    <button
+      (click)="generateEmbedding()"
+      [disabled]="loading || !text || !text.trim()"
+      class="generate-button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span>{{ loading ? 'Generating...' : 'Generate Embedding' }}</span>
+    </button>
+
+    <div *ngIf="result" class="result-card">
+      <div class="result-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <h3>Embedding Results</h3>
+      </div>
+
+      <div class="result-stat">
+        <span class="stat-label">Vector Length:</span>
+        <span class="stat-value">{{ result.length }}</span>
+      </div>
+
+      <div class="result-section">
+        <h4>First 10 Values</h4>
+        <div class="vector-preview">
+          {{ result.vector.slice(0, 10).join(', ') }}...
+        </div>
+      </div>
+
+      <div class="result-section">
+        <h4>Full Vector</h4>
+        <div class="vector-full">
+          <pre>{{ result.vector | json }}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

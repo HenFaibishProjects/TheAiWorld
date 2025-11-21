@@ -1,0 +1,186 @@
+<div class="vector-compare-container">
+  <div class="vector-header">
+    <div class="header-content">
+      <div class="vector-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h18v18H3V3z"></path>
+          <path d="M3 9h18M9 21V9"></path>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2>Vector Comparison</h2>
+        <span class="status">
+          <span class="status-dot"></span>
+          Dog vs Cat Similarity
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vector-body">
+    <div *ngIf="!result && !loading && !error" class="welcome-message">
+      <div class="welcome-icon">🔬</div>
+      <h3>Compare Vector Embeddings</h3>
+      <p>Click the button below to compare Dog and Cat vectors using cosine similarity</p>
+    </div>
+
+    <div *ngIf="loading" class="loading-message">
+      <div class="loader"></div>
+      <p>Comparing vectors...</p>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+    </div>
+
+    <div class="action-section">
+      <button
+        (click)="compareVectors()"
+        [disabled]="loading"
+        class="compare-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 12h8M12 8v8"></path>
+        </svg>
+        <span>{{ loading ? 'Comparing...' : 'Compare Dog vs Cat Vectors' }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="result" class="result-container">
+      <div class="result-card main-result">
+        <div class="result-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          <h3>Comparison Results</h3>
+        </div>
+
+        <div class="comparison-pair">
+          <span class="pair-label">Comparing:</span>
+          <span class="pair-value">{{ result.pair }}</span>
+        </div>
+
+        <div class="similarity-display">
+          <div class="similarity-label">Cosine Similarity</div>
+          <div class="similarity-value" [style.color]="getSimilarityColor()">
+            {{ result.similarityPercent }}
+          </div>
+          <div class="similarity-bar">
+            <div class="similarity-fill" 
+                 [style.width]="result.similarityPercent"
+                 [style.background-color]="getSimilarityColor()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="explanation-card" *ngIf="result.similarityExplanation">
+        <div class="explanation-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3>Similarity Explanation</h3>
+        </div>
+        <div class="explanation-content">
+          <div class="explanation-icon">💡</div>
+          <p class="explanation-text">{{ result.similarityExplanation }}</p>
+        </div>
+      </div>
+
+      <div class="vectors-display">
+        <div class="vector-card">
+          <div class="vector-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            </svg>
+            <h4>Vector 1 Preview (Dog)</h4>
+          </div>
+          <div class="vector-preview">
+            <div class="vector-values">
+              <span *ngFor="let value of result.vector1Preview" class="vector-value">
+                {{ value }}
+              </span>
+            </div>
+            <div class="vector-info">
+              <span class="info-label">First 5 dimensions shown</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vector-card">
+          <div class="vector-card-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            </svg>
+            <h4>Vector 2 Preview (Cat)</h4>
+          </div>
+          <div class="vector-preview">
+            <div class="vector-values">
+              <span *ngFor="let value of result.vector2Preview" class="vector-value">
+                {{ value }}
+              </span>
+            </div>
+            <div class="vector-info">
+              <span class="info-label">First 5 dimensions shown</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="interpretation-guide">
+        <div class="guide-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 16v-4M12 8h.01"></path>
+          </svg>
+          <h4>Understanding Your Score</h4>
+        </div>
+        <div class="score-ranges">
+          <div class="score-range" [class.active]="isScoreInRange(95, 100)">
+            <div class="range-indicator" style="background: #10b981;"></div>
+            <div class="range-content">
+              <div class="range-label">95-100%</div>
+              <div class="range-description">Identical or nearly identical words</div>
+            </div>
+          </div>
+          <div class="score-range" [class.active]="isScoreInRange(70, 95)">
+            <div class="range-indicator" style="background: #3b82f6;"></div>
+            <div class="range-content">
+              <div class="range-label">70-95%</div>
+              <div class="range-description">Very similar or strong semantic connection</div>
+            </div>
+          </div>
+          <div class="score-range" [class.active]="isScoreInRange(50, 70)">
+            <div class="range-indicator" style="background: #f59e0b;"></div>
+            <div class="range-content">
+              <div class="range-label">50-70%</div>
+              <div class="range-description">Related concepts, moderate connection</div>
+            </div>
+          </div>
+          <div class="score-range" [class.active]="isScoreInRange(0, 50)">
+            <div class="range-indicator" style="background: #ef4444;"></div>
+            <div class="range-content">
+              <div class="range-label">&lt; 50%</div>
+              <div class="range-description">Weakly related or unrelated</div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-note">
+          <strong>Note:</strong> Semantic embeddings capture meaning across all contexts. 
+          Words like "monitor" and "screen" typically score 50-60% because "screen" has multiple 
+          meanings (display, filter, projection, etc.), while "monitor" is more specific.
+          <strong>50-60% is considered good for related terms!</strong>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-content">
+          <h4>About Cosine Similarity</h4>
+          <p>Cosine similarity measures the cosine of the angle between two vectors. Values range from 0% (completely dissimilar) to 100% (identical). Higher percentages indicate greater similarity between the embeddings.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
