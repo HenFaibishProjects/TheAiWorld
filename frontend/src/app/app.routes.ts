@@ -3,30 +3,31 @@ import { CostSimulatorComponent } from './components/costs/costs';
 import { PromptComponent } from './components/prompt/prompt';
 import { VectorCompareComponent } from './components/vector-compare/vector-compare';
 import { AiMenuComponent } from './components/ai-menu/ai-menu';
+import { EmbeddingComponent } from './components/embedding/embedding.component';
 
 export const routes: Routes = [
   {
     path: '',
-    component: AiMenuComponent
+    component: AiMenuComponent,
   },
   {
     path: 'costs',
-    component: CostSimulatorComponent
+    component: CostSimulatorComponent,
   },
   {
     path: 'prompt',
-    component: PromptComponent
+    component: PromptComponent,
+  },
+  {
+    path: 'embedding',
+    component: EmbeddingComponent,
+  },
+  {
+    path: 'vector-compare',
+    component: VectorCompareComponent,
   },
   {
     path: 'rag',
-    component: VectorCompareComponent // Using vector-compare as placeholder for RAG
+    component: VectorCompareComponent,
   },
-  {
-    path: 'fine-tuning',
-    component: VectorCompareComponent // Placeholder - you can create a separate component later
-  },
-  {
-    path: 'vector-embedding',
-    component: VectorCompareComponent
-  }
 ];

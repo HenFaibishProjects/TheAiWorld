@@ -1,3 +1,4 @@
+import 'zone.js';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -11,4 +12,4 @@ bootstrapApplication(AppComponent, {
     provideAnimations(),
     provideRouter(routes),
   ],
-}).catch(err => console.error(err));
+}).catch((err) => console.error(err));

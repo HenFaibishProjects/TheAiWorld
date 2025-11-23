@@ -1,17 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ChatModule } from './chat/chat.module';
-import { OpenAIEmbeddingController  } from './openai/openai-embedding.controller';
-import { NomicEmbeddingController  } from './nomic/nomic-embedding.controller';
+import { OpenAIEmbeddingController } from './openai/openai-embedding.controller';
+import { NomicEmbeddingController } from './nomic/nomic-embedding.controller';
 import { NomicEmbeddingService } from './nomic/nomic-embedding.service';
 import { OpenAIEmbeddingService } from './openai/openai-embedding.service';
 import { NomicClient } from './nomic/nomic.client';
 import { OpenAIEmbeddingClient } from './openai/openai.client';
 import { VectorUtilsModule } from './vector/vector-utils.module';
 import { VectorUtilsService } from './vector/vector-utils.service';
+import { HealthController } from './health/health.controller';
 
 @Module({
   imports: [ChatModule, VectorUtilsModule],
-  controllers: [OpenAIEmbeddingController, NomicEmbeddingController],
+  controllers: [
+    HealthController,
+    OpenAIEmbeddingController,
+    NomicEmbeddingController,
+  ],
   providers: [
     VectorUtilsService,
     NomicEmbeddingService,

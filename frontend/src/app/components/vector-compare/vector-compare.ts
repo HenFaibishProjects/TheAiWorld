@@ -1,15 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VectorCompareService } from './vector-compare.service';
-
-interface ComparisonResult {
-  pair: string;
-  similarityPercent: string;
-  similarityExplanation?: string;
-  vector1Preview: number[];
-  vector2Preview: number[];
-}
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-vector-compare',
@@ -19,43 +11,53 @@ interface ComparisonResult {
   styleUrls: ['./vector-compare.component.css']
 })
 export class VectorCompareComponent {
-  loading = false;
-  result: ComparisonResult | null = null;
-  error: string | null = null;
+  comparisonError: string = '';
+  comparingWords: boolean = false;
+  comparisonResult: any = null;
+  word1: string = '';
+  word2: string = '';
 
-  constructor(private vectorCompareService: VectorCompareService) {}
+  constructor(private http: HttpClient) {}
 
-  compareVectors() {
-    this.loading = true;
-    this.error = null;
-    this.result = null;
+  compareWords() {
+    if (!this.word1 || !this.word2 || this.comparingWords) return;
 
-    this.vectorCompareService.compareDogCat().subscribe({
-      next: (data) => {
-        this.result = data;
-        this.loading = false;
+    this.comparingWords = true;
+    this.comparisonError = '';
+    this.comparisonResult = null;
+
+    this.http.post('http://localhost:3000/embed/openai/compare', {
+      word1: this.word1,
+      word2: this.word2
+    }).subscribe({
+      next: (data: any) => {
+        this.comparisonResult = data;
+        this.comparingWords = false;
       },
-      error: (err) => {
-        this.error = 'Failed to compare vectors. Please check if the backend is running and vector files exist.';
-        this.loading = false;
-        console.error('Error comparing vectors:', err);
+      error: (error) => {
+        this.comparisonError = 'Failed to compare words. Please try again.';
+        this.comparingWords = false;
+        console.error('Comparison error:', error);
       }
     });
   }
 
-  getSimilarityColor(): string {
-    if (!this.result) return '#6c757d';
-    
-    const percent = parseFloat(this.result.similarityPercent);
-    if (percent >= 95) return '#10b981';
-    if (percent >= 70) return '#3b82f6';
-    if (percent >= 50) return '#f59e0b';
-    return '#ef4444';
+  getSimilarityColor(similarity: string): string {
+    const percent = parseFloat(similarity);
+    if (percent >= 80) return '#10b981'; // Green
+    if (percent >= 60) return '#3b82f6'; // Blue
+    if (percent >= 40) return '#f59e0b'; // Orange
+    return '#ef4444'; // Red
   }
 
-  isScoreInRange(min: number, max: number): boolean {
-    if (!this.result) return false;
-    const percent = parseFloat(this.result.similarityPercent);
-    return percent >= min && percent < max;
+  getSimilarityDescription(similarity: string): string {
+    const percent = parseFloat(similarity);
+    if (percent == 100) return '🔥🔥🔥 identical meanings!';
+    if (percent >= 90) return '🔥 Extremely similar - Almost identical meanings!';
+    if (percent >= 80) return '✨ Very similar - Strong semantic connection';
+    if (percent >= 70) return '👍 Similar - Clear relationship between words';
+    if (percent >= 60) return '🤝 Somewhat similar - Moderate connection';
+    if (percent >= 40) return '🤔 Slightly related - Weak connection';
+    return '❌ Not similar - Very different meanings';
   }
 }

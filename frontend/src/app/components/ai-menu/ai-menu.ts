@@ -23,49 +23,49 @@ export class AiMenuComponent {
   menuItems: MenuItem[] = [
     {
       id: 1,
-      title: 'Costs',
-      description: 'Manage and analyze AI operation costs',
-      icon: '💰',
-      route: '/costs',
-      color: '#10b981',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
-    },
-    {
-      id: 2,
       title: 'Prompt',
-      description: 'Create and test AI prompts',
+      description: 'Create and test AI prompts with multiple providers',
       icon: '✨',
       route: '/prompt',
       color: '#8b5cf6',
-      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
     },
     {
-      id: 3,
+      id: 2,
       title: 'RAG',
       description: 'Retrieval Augmented Generation system',
       icon: '🔍',
       route: '/rag',
       color: '#3b82f6',
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
+      gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
     },
     {
-      id: 4,
+      id: 3,
       title: 'Fine Tuning',
       description: 'Train and optimize AI models',
       icon: '⚙️',
       route: '/fine-tuning',
       color: '#f59e0b',
-      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+    },
+    {
+      id: 4,
+      title: 'Vector Compare',
+      description: 'Compare vector similarity between texts',
+      icon: '🧬',
+      route: '/vector-compare',
+      color: '#ec4899',
+      gradient: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
     },
     {
       id: 5,
       title: 'Vector Embedding',
-      description: 'Convert data to vector representations',
-      icon: '🧬',
-      route: '/vector-embedding',
-      color: '#ec4899',
-      gradient: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
-    }
+      description: 'Generate embeddings from text data',
+      icon: '🔢',
+      route: '/embedding',
+      color: '#10b981',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    },
   ];
 
   constructor(private router: Router) {}

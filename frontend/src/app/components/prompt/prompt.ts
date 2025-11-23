@@ -3,6 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../chat.service';
 import { CostSimulatorComponent } from '../costs/costs';
+import type {
+  ChatResponse,
+  ModelInfo,
+  AIProvider,
+  ModelPricing,
+  TokenUsage,
+} from '../../models/chat.model';
 
 @Component({
   selector: 'app-prompt',
@@ -12,23 +19,20 @@ import { CostSimulatorComponent } from '../costs/costs';
   styleUrls: ['./prompt.css']
 })
 export class PromptComponent implements OnInit {
-  message: string = '';
+  message = '';
   response: string | null = null;
-  isLoading: boolean = false;
-  modelName: string = '';
-  modelTemperature: number = 0;
-  modelMaxTokens: number = 0;
-  selectedProvider: string = 'claude';
-  
+  isLoading = false;
+  errorMessage: string | null = null;
+  modelName = '';
+  modelTemperature = 0;
+  modelMaxTokens = 0;
+  selectedProvider: AIProvider = 'claude';
+
   // Token usage tracking
-  tokenUsage: {
-    prompt: number;
-    response: number;
-    total: number;
-  } | null = null;
+  tokenUsage: TokenUsage | null = null;
 
   // Cost calculation
-  modelPricing: any = {
+  modelPricing: Record<string, ModelPricing> = {
     'gpt4': { name: 'GPT-4', inputPrice: 0.03, outputPrice: 0.06 },
     'gpt4-turbo': { name: 'GPT-4 Turbo', inputPrice: 0.01, outputPrice: 0.03 },
     'gpt35': { name: 'GPT-3.5 Turbo', inputPrice: 0.0015, outputPrice: 0.002 },
@@ -36,9 +40,9 @@ export class PromptComponent implements OnInit {
     'claude-sonnet': { name: 'Claude 3.5 Sonnet', inputPrice: 0.003, outputPrice: 0.015 },
     'claude-haiku': { name: 'Claude 3 Haiku', inputPrice: 0.00025, outputPrice: 0.00125 }
   };
-  
+
   modelKeys: string[] = Object.keys(this.modelPricing);
-  calculatedCosts: { [key: string]: number } = {};
+  calculatedCosts: Record<string, number> = {};
 
   constructor(private chatService: ChatService) {}
 
@@ -46,49 +50,53 @@ export class PromptComponent implements OnInit {
     this.loadModelInfo();
   }
 
-  loadModelInfo() {
+  loadModelInfo(): void {
     this.chatService.getModelInfo().subscribe({
-      next: (info: any) => {
-        this.modelName = info.name || '';
+      next: (info: ModelInfo) => {
+        this.modelName = info.model || '';
         this.modelTemperature = info.temperature || 0;
         this.modelMaxTokens = info.maxTokens || 0;
       },
       error: (error) => {
         console.error('Error loading model info:', error);
-      }
+        this.errorMessage = 'Failed to load model information';
+      },
     });
   }
 
-  handleEnter(event: any) {
+  handleEnter(event: KeyboardEvent): void {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.send();
     }
   }
 
-  send() {
+  send(): void {
     if (!this.message || !this.message.trim()) {
+      this.errorMessage = 'Please enter a message';
       return;
     }
 
     this.isLoading = true;
     this.response = null;
+    this.errorMessage = null;
     this.tokenUsage = null;
 
     this.chatService.send(this.message, this.selectedProvider).subscribe({
-      next: (result: any) => {
+      next: (result: ChatResponse) => {
         console.log('Received result:', result);
-        
+
         // Extract token usage
         this.tokenUsage = {
           prompt: result.promptTokens || 0,
           response: result.responseTokens || 0,
-          total: result.totalTokens || 0
+          total: result.totalTokens || 0,
         };
-        
+
         // Handle error responses from backend
         if (result.error) {
-          this.response = `Error: ${result.error}\n${result.details || result.raw || ''}`;
+          this.errorMessage = result.error;
+          this.response = result.details || result.raw || 'No additional details';
         }
         // Format the structured response
         else if (result.subject && result['what to seach in youtube']) {
@@ -98,19 +106,21 @@ export class PromptComponent implements OnInit {
         else {
           this.response = JSON.stringify(result, null, 2);
         }
-        
+
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: Error) => {
         console.error('Error sending message:', error);
-        this.response = 'Error: Failed to get response from AI';
+        this.errorMessage = error.message || 'Failed to get response from AI';
+        this.response = null;
         this.isLoading = false;
-      }
+      },
     });
   }
 
-  onProviderChange() {
+  onProviderChange(): void {
     console.log('Provider changed to:', this.selectedProvider);
+    this.errorMessage = null;
     this.loadModelInfo();
   }
 
@@ -119,7 +129,7 @@ export class PromptComponent implements OnInit {
     return (tokens / this.tokenUsage.total) * 100;
   }
 
-  calculateCostForModel(modelKey: string) {
+  calculateCostForModel(modelKey: string): void {
     // Calculation moved to CostSimulatorComponent; parent no longer performs cost math here.
   }
 }

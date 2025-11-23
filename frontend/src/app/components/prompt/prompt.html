@@ -77,7 +77,7 @@
       <textarea [(ngModel)]="message"
         placeholder="Type your message here..."
         rows="1"
-        (keydown.enter)="handleEnter($event)">
+        (keydown)="handleEnter($event)">
       </textarea>
 
       <button (click)="send()" class="send-button" [disabled]="!message || !message.trim()">
@@ -101,7 +101,7 @@
       </svg>
       <span class="token-title">Token Usage</span>
     </div>
-    
+
     <div class="token-stats">
       <div class="token-stat-item">
         <div class="stat-label">Prompt Tokens</div>
@@ -110,7 +110,7 @@
           <div class="stat-bar-fill prompt-bar" [style.width.%]="getTokenPercentage(tokenUsage.prompt)"></div>
         </div>
       </div>
-      
+
       <div class="token-stat-item">
         <div class="stat-label">Response Tokens</div>
         <div class="stat-value response-value">{{ tokenUsage.response }}</div>
@@ -118,7 +118,7 @@
           <div class="stat-bar-fill response-bar" [style.width.%]="getTokenPercentage(tokenUsage.response)"></div>
         </div>
       </div>
-      
+
       <div class="token-stat-item total-item">
         <div class="stat-label">Total Tokens</div>
         <div class="stat-value total-value">{{ tokenUsage.total }}</div>
