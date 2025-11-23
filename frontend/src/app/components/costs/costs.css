@@ -1,0 +1,77 @@
+.cost-simulator {
+  margin-top: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.cost-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #10b981;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.model-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 10px;
+}
+
+.model-button {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.model-button:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+}
+
+.model-button.calculated {
+  border-color: #10b981;
+  background: rgba(16,185,129,0.1);
+}
+
+.model-button-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.model-button-cost {
+  font-family: 'Courier New', monospace;
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* Table styles for formatted costs */
+.cost-table-wrap { overflow-x: auto; margin-top: 8px; }
+.cost-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cost-table thead th { text-align: left; padding: 10px 12px; color: #374151; font-weight: 700; border-bottom: 1px solid #e6eef8; }
+.cost-table tbody td { padding: 10px 12px; border-bottom: 1px solid #f3f6fb; color: #0b1220; }
+.cost-table tbody tr:hover { background: rgba(37,99,235,0.02); }
+.cost-table .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace; color: #1f2937; }
+.cost-col { width: 160px; }
+.model-actions { margin-top: 12px; display:flex; gap:8px; }
+.btn-refresh { background: transparent; border: 1px solid #dbeafe; color: #1e40af; padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.btn-refresh:hover { background: #eef2ff; }
+.empty-state { padding: 14px; color: #6b7280; background: #fbfdff; border-radius: 8px; border: 1px dashed #e6eef8; }
+
+/* Mini bar visualization */
+.cost-row { display:flex; flex-direction:column; gap:6px; }
+.cost-value { font-weight: 700; color: #0b1220; }
+.cost-bar { height: 8px; background: #f1f5f9; border-radius: 6px; overflow: hidden; }
+.cost-bar-fill { height: 100%; width: 0%; transition: width 360ms ease; }
+.cost-bar-fill[style*="width: 0"] { background: linear-gradient(90deg,#e5e7eb,#e5e7eb); }
+
+@media (max-width: 640px) {
+  .cost-table thead th, .cost-table tbody td { padding: 8px 10px; }
+  .cost-col { width: 140px; }
+}

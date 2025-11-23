@@ -1,0 +1,138 @@
+<div class="chatbot-container">
+  <div class="model-info-bar">
+    <div class="model-selector">
+      <label for="provider-select">AI Provider:</label>
+      <select id="provider-select" [(ngModel)]="selectedProvider" (ngModelChange)="onProviderChange()" class="provider-dropdown">
+        <option value="claude">Claude</option>
+        <option value="openai">OpenAI</option>
+      </select>
+    </div>
+    <div class="model-label" *ngIf="modelName">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="model-icon">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+      <span class="model-name">{{ modelName }}</span>
+      <span class="model-params">
+        <span class="param">Temp: {{ modelTemperature }}</span>
+        <span class="param-separator">•</span>
+        <span class="param">Max: {{ modelMaxTokens }} tokens</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="chatbot-header">
+    <div class="header-content">
+      <div class="bot-avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z"></path>
+          <circle cx="9" cy="13" r="1"></circle>
+          <circle cx="15" cy="13" r="1"></circle>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2>AI Assistant</h2>
+        <span class="status">
+          <span class="status-dot"></span>
+          Online
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-body">
+    <div *ngIf="!response && !isLoading" class="welcome-message">
+      <div class="welcome-icon">💬</div>
+      <h3>How can I help you today?</h3>
+      <p>Send me a message and I'll respond right away</p>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-message">
+      <div class="loader"></div>
+      <p>Processing your request...</p>
+    </div>
+
+    <div *ngIf="response && !isLoading" class="messages">
+      <div class="message user-message">
+        <div class="message-content">{{ message }}</div>
+      </div>
+
+      <div class="message bot-message">
+        <div class="bot-avatar-small">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <circle cx="9" cy="9" r="1"></circle>
+            <circle cx="15" cy="9" r="1"></circle>
+          </svg>
+        </div>
+        <div class="message-content">{{ response }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <div class="input-controls">
+      <textarea [(ngModel)]="message"
+        placeholder="Type your message here..."
+        rows="1"
+        (keydown.enter)="handleEnter($event)">
+      </textarea>
+
+      <button (click)="send()" class="send-button" [disabled]="!message || !message.trim()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path>
+        </svg>
+        <span>Send</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Token Usage Display -->
+<div *ngIf="tokenUsage" class="token-usage-container">
+  <div class="token-usage-card">
+    <div class="token-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="token-icon">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+        <path d="M2 17l10 5 10-5"></path>
+        <path d="M2 12l10 5 10-5"></path>
+      </svg>
+      <span class="token-title">Token Usage</span>
+    </div>
+    
+    <div class="token-stats">
+      <div class="token-stat-item">
+        <div class="stat-label">Prompt Tokens</div>
+        <div class="stat-value prompt-value">{{ tokenUsage.prompt }}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill prompt-bar" [style.width.%]="getTokenPercentage(tokenUsage.prompt)"></div>
+        </div>
+      </div>
+      
+      <div class="token-stat-item">
+        <div class="stat-label">Response Tokens</div>
+        <div class="stat-value response-value">{{ tokenUsage.response }}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill response-bar" [style.width.%]="getTokenPercentage(tokenUsage.response)"></div>
+        </div>
+      </div>
+      
+      <div class="token-stat-item total-item">
+        <div class="stat-label">Total Tokens</div>
+        <div class="stat-value total-value">{{ tokenUsage.total }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Simulator Component -->
+  <app-cost-simulator
+    [promptTokens]="tokenUsage.prompt"
+    [responseTokens]="tokenUsage.response"
+    [totalTokens]="tokenUsage.total"
+    [modelPricing]="modelPricing"
+    [modelKeys]="modelKeys"
+    [calculatedCosts]="calculatedCosts">
+  </app-cost-simulator>
+</div>

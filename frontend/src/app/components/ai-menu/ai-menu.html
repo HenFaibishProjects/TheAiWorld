@@ -1,0 +1,36 @@
+<div class="menu-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="title">
+        <span class="title-gradient">AI Tools Hub</span>
+      </h1>
+      <p class="subtitle">Choose your next AI adventure</p>
+    </div>
+    <div class="background-decoration">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+    </div>
+  </div>
+
+  <div class="cards-container">
+    <div 
+      *ngFor="let item of menuItems" 
+      class="menu-card"
+      (click)="navigateTo(item.route)"
+      (mousemove)="onCardHover($event, item)"
+      [style.--card-color]="item.color"
+      [style.--card-gradient]="item.gradient"
+    >
+      <div class="card-glow"></div>
+      <div class="card-content">
+        <div class="card-icon">{{ item.icon }}</div>
+        <h2 class="card-title">{{ item.title }}</h2>
+        <p class="card-description">{{ item.description }}</p>
+        <div class="card-footer">
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

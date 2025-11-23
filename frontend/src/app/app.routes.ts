@@ -1,3 +1,32 @@
 import { Routes } from '@angular/router';
+import { CostSimulatorComponent } from './components/costs/costs';
+import { PromptComponent } from './components/prompt/prompt';
+import { VectorCompareComponent } from './components/vector-compare/vector-compare';
+import { AiMenuComponent } from './components/ai-menu/ai-menu';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  {
+    path: '',
+    component: AiMenuComponent
+  },
+  {
+    path: 'costs',
+    component: CostSimulatorComponent
+  },
+  {
+    path: 'prompt',
+    component: PromptComponent
+  },
+  {
+    path: 'rag',
+    component: VectorCompareComponent // Using vector-compare as placeholder for RAG
+  },
+  {
+    path: 'fine-tuning',
+    component: VectorCompareComponent // Placeholder - you can create a separate component later
+  },
+  {
+    path: 'vector-embedding',
+    component: VectorCompareComponent
+  }
+];

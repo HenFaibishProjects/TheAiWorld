@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { VectorCompareService } from './vector-compare.service';
 
 interface ComparisonResult {
@@ -13,7 +14,7 @@ interface ComparisonResult {
 @Component({
   selector: 'app-vector-compare',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './vector-compare.component.html',
   styleUrls: ['./vector-compare.component.css']
 })
