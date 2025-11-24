@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { BackToHomeButtonComponent } from '../back-to-home-button/back-to-home-button';
+
 
 @Component({
   selector: 'app-vector-compare',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BackToHomeButtonComponent],
   templateUrl: './vector-compare.component.html',
   styleUrls: ['./vector-compare.component.css']
 })

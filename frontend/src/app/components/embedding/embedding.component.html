@@ -1,3 +1,4 @@
+  <app-back-to-home-button></app-back-to-home-button>
 <div class="embedding-container">
   <div class="embedding-header">
     <div class="header-content">
@@ -54,8 +55,25 @@
         <circle cx="12" cy="12" r="10"></circle>
         <polyline points="12 6 12 12 16 14"></polyline>
       </svg>
-      <span>{{ loading ? 'Generating...' : 'Generate Embedding' }}</span>
+      <span *ngIf="!loading">Generate Embedding</span>
+      <span *ngIf="loading" class="loading-content">
+        <svg class="spinner" viewBox="0 0 50 50" aria-hidden="true">
+          <circle cx="25" cy="25" r="20" fill="none" stroke-width="5" stroke="#fff" stroke-linecap="round"></circle>
+        </svg>
+        <span>Generating...</span>
+      </span>
     </button>
+
+    <!-- Toast container (top-right) -->
+    <div class="toast-container" *ngIf="error" aria-live="assertive">
+      <div class="toast">
+        <div class="toast-body">{{ error }}</div>
+        <div class="toast-actions">
+          <button class="toast-btn dismiss" (click)="dismissToast()">Dismiss</button>
+          <button class="toast-btn retry" (click)="retry()" [disabled]="loading">Retry</button>
+        </div>
+      </div>
+    </div>
 
     <div *ngIf="result" class="result-card">
       <div class="result-header">

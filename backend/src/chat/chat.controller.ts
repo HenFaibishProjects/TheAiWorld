@@ -3,6 +3,7 @@ import {
   Post,
   Body,
   Get,
+  Query,
   HttpException,
   HttpStatus,
   UsePipes,
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { AIConfig } from '../ai/ai.config';
-import type { ChatRequestDto } from './dto/chat-request.dto';
+import { ChatRequestDto } from './dto/chat-request.dto';
 import type { ChatResponseDto, ModelInfoDto } from './dto/chat-response.dto';
 
 @Controller('chat')
@@ -21,8 +22,27 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('model')
-  getModelInfo(): ModelInfoDto {
-    this.logger.log('Fetching model information');
+  getModelInfo(@Query('provider') provider?: string): ModelInfoDto {
+    this.logger.log('Fetching model information', provider ? `for provider=${provider}` : '');
+
+    // Provide provider-specific model info. Defaults to AIConfig when provider
+    // is not recognized.
+    if (provider === 'openai') {
+      return {
+        model: 'gpt-4o-mini',
+        temperature: 0.3,
+        maxTokens: 60,
+      };
+    }
+
+    if (provider === 'claude') {
+      return {
+        model: AIConfig.model,
+        temperature: AIConfig.temperature,
+        maxTokens: AIConfig.maxTokens,
+      };
+    }
+
     return {
       model: AIConfig.model,
       temperature: AIConfig.temperature,
@@ -31,7 +51,7 @@ export class ChatController {
   }
 
   @Post()
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  //@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async send(@Body() chatRequest: ChatRequestDto): Promise<ChatResponseDto> {
     const { message, provider } = chatRequest;
 

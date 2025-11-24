@@ -15,9 +15,10 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  getModelInfo(): Observable<ModelInfo> {
-    console.log('Fetching model info from backend');
-    return this.http.get<ModelInfo>(`${this.apiUrl}/model`).pipe(
+  getModelInfo(provider?: AIProvider): Observable<ModelInfo> {
+    const url = provider ? `${this.apiUrl}/model?provider=${provider}` : `${this.apiUrl}/model`;
+    console.log('Fetching model info from backend', { url });
+    return this.http.get<ModelInfo>(url).pipe(
       tap((info) => console.log('Model info received:', info)),
       catchError(this.handleError),
     );

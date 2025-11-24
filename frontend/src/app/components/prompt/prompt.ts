@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChatService } from '../../chat.service';
 import { CostSimulatorComponent } from '../costs/costs';
+import { BackToHomeButtonComponent } from '../back-to-home-button/back-to-home-button';
 import type {
   ChatResponse,
   ModelInfo,
@@ -14,7 +16,7 @@ import type {
 @Component({
   selector: 'app-prompt',
   standalone: true,
-  imports: [CommonModule, FormsModule, CostSimulatorComponent],
+  imports: [CommonModule, FormsModule, CostSimulatorComponent, BackToHomeButtonComponent],
   templateUrl: './prompt.html',
   styleUrls: ['./prompt.css']
 })
@@ -44,14 +46,17 @@ export class PromptComponent implements OnInit {
   modelKeys: string[] = Object.keys(this.modelPricing);
   calculatedCosts: Record<string, number> = {};
 
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadModelInfo();
   }
 
   loadModelInfo(): void {
-    this.chatService.getModelInfo().subscribe({
+    this.chatService.getModelInfo(this.selectedProvider).subscribe({
       next: (info: ModelInfo) => {
         this.modelName = info.model || '';
         this.modelTemperature = info.temperature || 0;
@@ -99,8 +104,8 @@ export class PromptComponent implements OnInit {
           this.response = result.details || result.raw || 'No additional details';
         }
         // Format the structured response
-        else if (result.subject && result['what to seach in youtube']) {
-          this.response = `Subject: ${result.subject}\n\nYouTube Search: ${result['what to seach in youtube']}`;
+        else if (result.subject && result['do the ai know the answer'] && result['the answer']) {
+          this.response = `Subject: ${result.subject}\n\ndo the ai know the answer: ${result['do the ai know the answer']}\n\nThe answer: ${result['the answer']}`;
         }
         // Fallback to displaying the entire object as JSON
         else {
@@ -121,7 +126,20 @@ export class PromptComponent implements OnInit {
   onProviderChange(): void {
     console.log('Provider changed to:', this.selectedProvider);
     this.errorMessage = null;
+    // Reload model info from backend; do NOT modify `modelName` here so it remains
+    // whatever the backend previously provided until the new info arrives.
     this.loadModelInfo();
+  }
+
+  getProviderLabel(): string {
+    // Return a human-friendly provider label. If you want a clearer
+    // hint when no modelName is available, include a small hint but do
+    // not overwrite the actual `modelName` property.
+    const label = this.selectedProvider === 'openai' ? 'OpenAI' : 'Claude';
+    if (!this.modelName) {
+      return `${label} (no model loaded)`;
+    }
+    return label;
   }
 
   getTokenPercentage(tokens: number): number {
@@ -131,5 +149,9 @@ export class PromptComponent implements OnInit {
 
   calculateCostForModel(modelKey: string): void {
     // Calculation moved to CostSimulatorComponent; parent no longer performs cost math here.
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/']);
   }
 }

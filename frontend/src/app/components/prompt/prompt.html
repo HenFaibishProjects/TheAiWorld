@@ -1,3 +1,4 @@
+  <app-back-to-home-button></app-back-to-home-button>
 <div class="chatbot-container">
   <div class="model-info-bar">
     <div class="model-selector">
@@ -13,7 +14,7 @@
         <line x1="8" y1="21" x2="16" y2="21"></line>
         <line x1="12" y1="17" x2="12" y2="21"></line>
       </svg>
-      <span class="model-name">{{ modelName }}</span>
+      <span class="model-name">{{ getProviderLabel() }} - {{ modelName }}</span>
       <span class="model-params">
         <span class="param">Temp: {{ modelTemperature }}</span>
         <span class="param-separator">•</span>

@@ -6,7 +6,8 @@ export interface TokenUsage {
 
 export interface ChatResponse {
   subject?: string;
-  'what to seach in youtube'?: string;
+  'do the ai know the answer'?: string;
+  'the answer'?: string;
   error?: string;
   raw?: string;
   details?: string;

@@ -29,12 +29,14 @@ No explanations. No markdown. No text before or after the JSON.
 Use this exact schema (valid JSON object):
 {
   "subject": "",
-  "what to seach in youtube": ""
+  "do the ai know the answer": "",
+  "the answer": ""
 }
 
 Where:
 - "subject" = a short string
-- "what to seach in youtube" = keyword to search in youtube on this subject
+- "do the ai know the answer" = "yes" or "no",
+- "the answer" = detailed answer to the question
 
 User message:
 "${userMessage}"

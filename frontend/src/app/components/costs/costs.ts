@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cost-simulator',
@@ -18,6 +19,8 @@ export class CostSimulatorComponent implements OnChanges {
   @Input() calculatedCosts: { [key: string]: number } = {};
 
   @Output() calculateModel = new EventEmitter<string>();
+
+  constructor(private router: Router) {}
 
   // Recalculate when inputs change so costs appear immediately
   ngOnChanges(changes: SimpleChanges) {
@@ -108,5 +111,9 @@ export class CostSimulatorComponent implements OnChanges {
     if (k.includes('claude')) return 'linear-gradient(90deg,#f472b6,#a78bfa)';
     if (k.includes('fine') || k.includes('vector')) return 'linear-gradient(90deg,#34d399,#10b981)';
     return 'linear-gradient(90deg,#60a5fa,#3b82f6)';
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/']);
   }
 }

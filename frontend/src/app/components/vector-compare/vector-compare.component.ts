@@ -2,11 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { BackToHomeButtonComponent } from '../back-to-home-button/back-to-home-button';
+
 
 @Component({
   selector: 'app-vector-compare',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BackToHomeButtonComponent],
   templateUrl: './vector-compare.component.html',
   styleUrls: ['./vector-compare.component.css']
 })
@@ -17,7 +20,10 @@ export class VectorCompareComponent {
   word1: string = '';
   word2: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   compareWords() {
     if (!this.word1 || !this.word2 || this.comparingWords) return;
@@ -59,5 +65,9 @@ export class VectorCompareComponent {
     if (percent >= 60) return '🤝 Somewhat similar - Moderate connection';
     if (percent >= 40) return '🤔 Slightly related - Weak connection';
     return '❌ Not similar - Very different meanings';
+  }
+
+  navigateToHome(): void {
+    this.router.navigate(['/']);
   }
 }
