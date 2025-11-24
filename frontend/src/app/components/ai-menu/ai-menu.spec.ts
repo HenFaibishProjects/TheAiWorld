@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Embedding } from './embedding.component';
+import { AiMenu } from './ai-menu';
 
-describe('Embedding', () => {
-  let component: Embedding;
-  let fixture: ComponentFixture<Embedding>;
+describe('AiMenu', () => {
+  let component: AiMenu;
+  let fixture: ComponentFixture<AiMenu>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Embedding]
+      imports: [AiMenu]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Embedding);
+    fixture = TestBed.createComponent(AiMenu);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

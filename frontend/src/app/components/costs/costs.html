@@ -1,0 +1,55 @@
+<!-- Cost Simulator Panel -->
+<div class="cost-simulator">
+  <div class="cost-header">
+    <div>
+      <span>Cost Simulator</span>
+      <div class="cost-info">Estimated costs are calculated automatically from token usage</div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="(promptTokens || responseTokens) && (promptTokens + responseTokens) > 0; else emptyState">
+    <div class="cost-table-wrap">
+      <table class="cost-table">
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Input $ / 1k</th>
+            <th>Output $ / 1k</th>
+            <th class="cost-col">Estimated Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let key of (modelKeys || [])">
+            <td class="model-name">{{ modelPricing[key]?.name || key }}</td>
+            <td class="mono">{{ modelPricing[key]?.inputPrice || 0 | number:'1.4-6' }}</td>
+            <td class="mono">{{ modelPricing[key]?.outputPrice || 0 | number:'1.4-6' }}</td>
+            <td class="cost-col">
+              <div class="cost-row">
+                <div class="cost-value">
+                  <ng-container *ngIf="calculatedCosts && calculatedCosts[key] !== undefined; else dash">
+                    {{ calculatedCosts[key] | currency:'USD':'symbol':'1.6-6' }}
+                  </ng-container>
+                  <ng-template #dash>—</ng-template>
+                </div>
+
+                <div class="cost-bar" aria-hidden="true">
+                  <div class="cost-bar-fill"
+                       [style.width.%]="percentFor(key)"
+                       [style.background]="barColor(key)">
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="model-actions">
+    </div>
+  </ng-container>
+
+  <ng-template #emptyState>
+    <div class="empty-state">No token data yet — send a prompt to see estimated costs.</div>
+  </ng-template>
+</div>
