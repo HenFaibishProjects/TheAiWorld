@@ -4,6 +4,7 @@ import { PromptComponent } from './components/prompt/prompt';
 import { VectorCompareComponent } from './components/vector-compare/vector-compare';
 import { AiMenuComponent } from './components/ai-menu/ai-menu';
 import { EmbeddingComponent } from './components/embedding/embedding.component';
+import { RagComponent } from './components/rag/rag.component';
 
 export const routes: Routes = [
   {
@@ -28,6 +29,6 @@ export const routes: Routes = [
   },
   {
     path: 'rag',
-    component: VectorCompareComponent,
+    component: RagComponent,
   },
 ];

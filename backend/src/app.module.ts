@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ChatModule } from './chat/chat.module';
+import { RagModule } from './rag/rag.module';
 import { OpenAIEmbeddingController } from './openai/openai-embedding.controller';
 import { NomicEmbeddingController } from './nomic/nomic-embedding.controller';
 import { NomicEmbeddingService } from './nomic/nomic-embedding.service';
@@ -11,7 +12,7 @@ import { VectorUtilsService } from './vector/vector-utils.service';
 import { HealthController } from './health/health.controller';
 
 @Module({
-  imports: [ChatModule, VectorUtilsModule],
+  imports: [ChatModule, RagModule, VectorUtilsModule],
   controllers: [
     HealthController,
     OpenAIEmbeddingController,
