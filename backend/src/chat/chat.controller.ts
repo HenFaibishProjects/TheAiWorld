@@ -51,7 +51,6 @@ export class ChatController {
   }
 
   @Post()
-  //@UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async send(@Body() chatRequest: ChatRequestDto): Promise<ChatResponseDto> {
     const { message, provider } = chatRequest;
 

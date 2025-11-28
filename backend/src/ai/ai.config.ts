@@ -5,3 +5,6 @@ export const AIConfig = {
   maxTokens: 60,
 };
 
+export const FT_MODEL = "ft:gpt-4.1-mini-2025-04-14:lida:hen-json-style-v3:CgXuzz3k";
+
+

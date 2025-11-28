@@ -124,6 +124,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Account for fixed navigation bar */
+body {
+  padding-top: 70px;
+}
+
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
