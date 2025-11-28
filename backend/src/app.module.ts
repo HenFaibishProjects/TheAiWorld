@@ -10,16 +10,21 @@ import { OpenAIEmbeddingClient } from './openai/openai.client';
 import { VectorUtilsModule } from './vector/vector-utils.module';
 import { VectorUtilsService } from './vector/vector-utils.service';
 import { HealthController } from './health/health.controller';
+import { FtModule } from './fineTuning/ft.module';
+import { FtController } from './fineTuning/ft.controller';
+import { FtService } from './fineTuning/ft.service';
 
 @Module({
-  imports: [ChatModule, RagModule, VectorUtilsModule],
+  imports: [ChatModule, RagModule, VectorUtilsModule, FtModule],
   controllers: [
     HealthController,
     OpenAIEmbeddingController,
     NomicEmbeddingController,
+    FtController
   ],
   providers: [
     VectorUtilsService,
+    FtService,
     NomicEmbeddingService,
     {
       provide: NomicClient,

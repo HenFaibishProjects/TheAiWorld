@@ -1,0 +1,51 @@
+<div class="ft-wrapper">
+  <h2 class="title">Phrase → Translator</h2>
+  <p class="subtitle">
+    Enter a slang phrase, and the model will translate it into
+    standard English, Romanian, and Hebrew, indicating whether it's slang.
+</p>
+
+  <div class="input-card">
+    <textarea
+      [(ngModel)]="inputText"
+      placeholder="Example: bro this food slaps"
+      rows="3"
+    ></textarea>
+
+    <button (click)="send()" [disabled]="loading">
+      {{ loading ? 'Sending…' : 'Translate' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="result" class="result-card">
+    <div class="result-header">
+      <span class="badge">Model response</span>
+      <span
+        class="slang-pill"
+        [class.slang-yes]="result.isItSlang === 'yes'"
+        [class.slang-no]="result.isItSlang === 'no'"
+      >
+        Slang: {{ result.isItSlang === 'yes' ? 'Yes' : 'No' }}
+      </span>
+    </div>
+
+    <div class="result-row">
+      <label>English (fixed):</label>
+      <p>{{ result.answerInEnglish || '-' }}</p>
+    </div>
+
+    <div class="result-row">
+      <label>Romanian:</label>
+      <p>{{ result.answerInRomanian || '-' }}</p>
+    </div>
+
+    <div class="result-row">
+      <label>Hebrew (free translation):</label>
+      <p>{{ result.translateToHebrew || '-' }}</p>
+    </div>
+  </div>
+</div>
