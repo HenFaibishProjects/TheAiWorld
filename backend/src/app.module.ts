@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatModule } from './chat/chat.module';
 import { RagModule } from './rag/rag.module';
+import { LoginModule } from './login/login.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { OpenAIEmbeddingController } from './openai/openai-embedding.controller';
 import { NomicEmbeddingController } from './nomic/nomic-embedding.controller';
 import { NomicEmbeddingService } from './nomic/nomic-embedding.service';
@@ -15,10 +20,27 @@ import { FtController } from './fineTuning/ft.controller';
 import { FtService } from './fineTuning/ft.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AIUser } from './login/entities/user.entity';
 
 
 @Module({
-  imports: [ChatModule, RagModule, VectorUtilsModule, FtModule,
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432', 10),
+      username: process.env.DB_USERNAME || 'postgres',
+      password: process.env.DB_PASSWORD || 'postgres',
+      database: process.env.DB_DATABASE || 'theaiworld',
+      entities: [AIUser],
+      synchronize: true, // Set to false in production
+    }),
+    AuthModule,
+    ChatModule,
+    RagModule,
+    LoginModule,
+    VectorUtilsModule,
+    FtModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
@@ -27,9 +49,13 @@ import { join } from 'path';
     HealthController,
     OpenAIEmbeddingController,
     NomicEmbeddingController,
-    FtController
+    FtController,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     VectorUtilsService,
     FtService,
     NomicEmbeddingService,

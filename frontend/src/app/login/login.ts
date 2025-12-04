@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth';
+import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,22 +15,42 @@ export class LoginComponent {
   username = '';
   password = '';
   errorMessage = '';
+  isLoading = false;
+  returnUrl = '/ai-menu';
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    // Get return url from route parameters or default to '/ai-menu'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/ai-menu';
+  }
 
   onSubmit() {
-    this.errorMessage = '';
-
-    const success = this.authService.login(this.username, this.password);
-
-    if (1==1) {
-      // later we can redirect to previous URL – for now: home/root
-      this.router.navigate(['/ai-menu']);
-    } else {
-      this.errorMessage = 'Invalid username or password.';
+    if (!this.username || !this.password) {
+      this.errorMessage = 'Please enter username and password.';
+      return;
     }
+
+    this.errorMessage = '';
+    this.isLoading = true;
+
+    this.authService.login(this.username, this.password).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.success) {
+          // Redirect to return URL or ai-menu
+          this.router.navigate([this.returnUrl]);
+        } else {
+          this.errorMessage = response.message || 'Invalid username or password.';
+        }
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = 'Login failed. Please try again.';
+        console.error('Login error:', error);
+      }
+    });
   }
 }

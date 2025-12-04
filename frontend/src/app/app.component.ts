@@ -17,7 +17,6 @@ export class AppComponent {
 	title = 'WorkWithTokens';
 
 	get hideNav() {
-		debugger;
-    return this.router.url === '/';
+    return this.router.url === '/' || this.router.url === '/login';
   }
 }
