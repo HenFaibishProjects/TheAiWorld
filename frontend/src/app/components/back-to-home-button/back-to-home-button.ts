@@ -11,6 +11,6 @@ export class BackToHomeButtonComponent {
   constructor(private router: Router) {}
 
   goHome(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/ai-menu']);
   }
 }

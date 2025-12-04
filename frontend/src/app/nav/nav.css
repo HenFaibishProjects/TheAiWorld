@@ -264,10 +264,6 @@
   }
 }
 
-/* Smooth Scrolling for Body when Nav is Fixed */
-body {
-  padding-top: 70px;
-}
 
 /* Animation for Nav Items */
 @keyframes slideInFromTop {

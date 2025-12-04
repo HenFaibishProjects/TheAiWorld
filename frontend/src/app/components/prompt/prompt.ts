@@ -13,6 +13,7 @@ import type {
   TokenUsage,
 } from '../../models/chat.model';
 
+
 @Component({
   selector: 'app-prompt',
   standalone: true,

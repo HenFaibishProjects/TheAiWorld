@@ -27,7 +27,7 @@ export class FtService {
       const raw = response.output_text;
 
       // Always ensure JSON
-      this.logger.log("📝 Raw OpenAI response:", raw);
+      this.logger.log("📝 Raw OpenAI response:",);
       this.logger.log("📏 Response length:", raw.length);
       const parsed: FtResponseDto = JSON.parse(raw);
       this.logger.log("✅ OpenAI response:", parsed);

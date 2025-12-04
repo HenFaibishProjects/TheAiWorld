@@ -13,9 +13,16 @@ import { HealthController } from './health/health.controller';
 import { FtModule } from './fineTuning/ft.module';
 import { FtController } from './fineTuning/ft.controller';
 import { FtService } from './fineTuning/ft.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 
 @Module({
-  imports: [ChatModule, RagModule, VectorUtilsModule, FtModule],
+  imports: [ChatModule, RagModule, VectorUtilsModule, FtModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+  ],
   controllers: [
     HealthController,
     OpenAIEmbeddingController,
