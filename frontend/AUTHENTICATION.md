@@ -283,7 +283,7 @@ No special code needed! The auth interceptor automatically adds the token:
 
 ```typescript
 // This request will automatically include the Authorization header
-this.http.post('http://localhost:3000/api/endpoint', data)
+this.http.post('https://theaiworld.onrender.com/api/endpoint', data)
   .subscribe(response => {
     // Handle response
   });

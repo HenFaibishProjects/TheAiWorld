@@ -13,7 +13,7 @@ interface ComparisonResult {
   providedIn: 'root'
 })
 export class VectorCompareService {
-  private apiUrl = 'http://localhost:3000/vector';
+  private apiUrl = 'https://theaiworld.onrender.com/vector';
 
   constructor(private http: HttpClient) {}
 

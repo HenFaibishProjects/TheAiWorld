@@ -19,7 +19,7 @@ export class Finetune {
   loading = false;
   error: string | null = null;
   result: FtResponseDto | null = null;
-  private apiUrl = 'http://localhost:3000/ft';
+  private apiUrl = 'https://theaiworld.onrender.com/ft';
 
   constructor(private http: HttpClient) {}
 

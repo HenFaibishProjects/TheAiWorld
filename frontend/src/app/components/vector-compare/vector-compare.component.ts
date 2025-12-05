@@ -32,7 +32,7 @@ export class VectorCompareComponent {
     this.comparisonError = '';
     this.comparisonResult = null;
 
-    this.http.post('http://localhost:3000/embed/openai/compare', {
+    this.http.post('https://theaiworld.onrender.com/embed/openai/compare', {
       word1: this.word1,
       word2: this.word2
     }).subscribe({

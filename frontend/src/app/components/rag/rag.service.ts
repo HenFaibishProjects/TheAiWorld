@@ -18,7 +18,7 @@ export interface RagResponse {
   providedIn: 'root'
 })
 export class RagService {
-  private apiUrl = 'http://localhost:3000/rag';
+  private apiUrl = 'https://theaiworld.onrender.com/rag';
 
   constructor(private http: HttpClient) {}
 

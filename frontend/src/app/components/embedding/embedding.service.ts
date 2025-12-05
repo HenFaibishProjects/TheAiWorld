@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root'
 })
 export class EmbeddingService {
-  private baseUrl = 'http://localhost:3000/embed';
+  private baseUrl = 'https://theaiworld.onrender.com/embed';
 
   constructor(private http: HttpClient) {}
 
