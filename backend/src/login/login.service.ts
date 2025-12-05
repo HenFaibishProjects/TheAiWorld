@@ -27,7 +27,6 @@ export class LoginService {
       const user = await this.userRepository.findOne({
         where: { username },
       });
-
       if (!user) {
         this.logger.warn(`Login failed: User not found - ${username}`);
         return {
@@ -37,7 +36,7 @@ export class LoginService {
       }
 
       // Compare password with hashed password
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = password==user.password? true:false;
 
       if (!isPasswordValid) {
         this.logger.warn(`Login failed: Invalid password for user - ${username}`);

@@ -70,7 +70,6 @@ import { AIUser } from './login/entities/user.entity';
     {
       provide: OpenAIEmbeddingClient,
       useFactory: () => {
-        console.log("🔑 OpenAI KEY:", process.env.OPENAI_API_KEY);
         return new OpenAIEmbeddingClient(process.env.OPENAI_API_KEY!);
       },
     },
