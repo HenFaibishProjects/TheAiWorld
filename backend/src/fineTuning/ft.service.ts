@@ -1,4 +1,4 @@
-import OpenAI from '@openai/openai';
+import OpenAI from 'openai';
 import { FtRequestDto } from './dto/ft-request.dto';
 import { FtResponseDto } from './dto/ft-response.dto';
 import { FT_MODEL } from '../ai/ai.config';
