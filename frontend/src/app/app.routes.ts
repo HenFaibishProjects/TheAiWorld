@@ -6,35 +6,50 @@ import { EmbeddingComponent } from './components/embedding/embedding.component';
 import { RagComponent } from './components/rag/rag.component';
 import { Finetune } from './components/finetune/finetune';
 import { LoginComponent } from './login/login';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: LoginComponent,
+    redirectTo: '/ai-menu',
+    pathMatch: 'full'
   },
-   {
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
     path: 'ai-menu',
     component: AiMenuComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'fine-tuning',
     component: Finetune,
+    canActivate: [authGuard]
   },
   {
     path: 'prompt',
     component: PromptComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'embedding',
     component: EmbeddingComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'vector-compare',
     component: VectorCompareComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'rag',
     component: RagComponent,
+    canActivate: [authGuard]
   },
-   { path: 'login', component: LoginComponent },
+  {
+    path: '**',
+    redirectTo: '/login'
+  }
 ];
