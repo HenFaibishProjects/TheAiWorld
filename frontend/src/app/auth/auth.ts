@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap, map, catchError, of } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 const AUTH_STORAGE_KEY = 'auth_data';
 
@@ -7,26 +10,48 @@ interface AuthData {
   expiresAt: number; // timestamp (ms)
 }
 
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  accessToken?: string;
+  userId?: number;
+  username?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private apiUrl = environment.apiUrl || 'http://localhost:3000';
+
+  constructor(private http: HttpClient) {}
+
   // ---- PUBLIC API ----
 
-  login(username: string, password: string): boolean {
-    // TODO: later call backend here.
-    // For now: simple mock – accept any non-empty username/password.
-    if (!username || !password) {
-      return false;
-    }
+  login(username: string, password: string): Observable<boolean> {
+    return this.http
+      .post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+      .pipe(
+        tap((response) => {
+          if (!response.success || !response.accessToken) {
+            throw new Error(response.message || 'Login failed');
+          }
 
-    const fakeToken = 'fake-token-' + Date.now();
-    const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // +1 day
+          const expiresIn = 24 * 60 * 60; // 24h in seconds
+          const expiresAt = Date.now() + expiresIn * 1000;
 
-    const authData: AuthData = { token: fakeToken, expiresAt };
-    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
-
-    return true;
+          const authData: AuthData = {
+            token: response.accessToken,
+            expiresAt,
+          };
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(authData));
+        }),
+        map(() => true),
+        catchError((error) => {
+          console.error('Login failed:', error);
+          return of(false);
+        })
+      );
   }
 
   logout(): void {
