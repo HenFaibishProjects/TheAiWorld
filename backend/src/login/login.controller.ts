@@ -50,4 +50,17 @@ export class LoginController {
       );
     }
   }
+
+  @Public()
+  @Post('register')
+  async register(@Body() body: { username: string; password: string }) {
+    this.logger.log(`Registration request for username: ${body.username}`);
+    const user = await this.loginService.createUser(body.username, body.password);
+    return {
+      success: true,
+      message: 'User created successfully',
+      userId: user.id,
+      username: user.username,
+    };
+  }
 }

@@ -36,7 +36,7 @@ export class LoginService {
       }
 
       // Compare password with hashed password
-      const isPasswordValid = password==user.password? true:false;
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
         this.logger.warn(`Login failed: Invalid password for user - ${username}`);
