@@ -51,7 +51,6 @@ export class LoginController {
     }
   }
 
-  @Public()
   @Post('register')
   async register(@Body() body: { username: string; password: string }) {
     // this.logger.log(`Registration request for username: ${body.username}`);
