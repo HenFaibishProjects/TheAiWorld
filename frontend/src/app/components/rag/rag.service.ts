@@ -14,6 +14,13 @@ export interface RagResponse {
   answer: RagAnswerDetail;
 }
 
+export interface RagUploadResponse {
+  fileName: string;
+  vectorStoreId: string;
+  fileCount: number;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,5 +33,12 @@ export class RagService {
     return this.http.get<RagResponse>(this.apiUrl, {
       params: { q: question }
     });
+  }
+
+  uploadFile(file: File): Observable<RagUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<RagUploadResponse>(`${this.apiUrl}/upload`, formData);
   }
 }

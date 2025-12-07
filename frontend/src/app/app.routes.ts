@@ -4,6 +4,7 @@ import { VectorCompareComponent } from './components/vector-compare/vector-compa
 import { AiMenuComponent } from './components/ai-menu/ai-menu';
 import { EmbeddingComponent } from './components/embedding/embedding.component';
 import { RagComponent } from './components/rag/rag.component';
+import { RagUploadComponent } from './components/rag/rag-upload.component';
 import { Finetune } from './components/finetune/finetune';
 import { LoginComponent } from './login/login';
 import { authGuard } from './guards/auth.guard';
@@ -46,6 +47,11 @@ export const routes: Routes = [
   {
     path: 'rag',
     component: RagComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'rag-upload',
+    component: RagUploadComponent,
     canActivate: [authGuard]
   },
   {

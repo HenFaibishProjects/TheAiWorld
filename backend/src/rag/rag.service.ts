@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
 import { RagResponse } from './rag-response';
+import OpenAI from 'openai';
 
 @Injectable()
 export class RagService {
   private readonly apiKey = process.env.OPENAI_API_KEY;
-  private readonly vectorStoreId = 'vs_6920ab0ec2f48191aa82cd3b209fb636';
   private assistantId: string | null = null;
+  private readonly logger = new Logger(RagService.name);
+  private client: OpenAI;
+  private vectorStoreId: string;
 
-  constructor() {}
+  constructor() {
+    this.client = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    this.vectorStoreId =
+      process.env.OPENAI_VECTOR_STORE_ID ||
+      'vs_6920ab0ec2f48191aa82cd3b209fb636'; // fallback
+  }
 
   // ==========================
   // PUBLIC METHOD
@@ -40,7 +51,12 @@ export class RagService {
 
   private parseJsonOutput(text: string): RagResponse {
     try {
-      const parsed = JSON.parse(text);
+      const parsed = JSON.parse(text) as {
+        answer?: string;
+        fromData?: boolean;
+        fromAI?: boolean;
+        tokens?: number;
+      };
 
       return {
         answer: parsed.answer ?? text,
@@ -88,7 +104,7 @@ You MUST respond ONLY in this JSON format:
       }),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as { id: string };
     return data.id;
   }
 
@@ -99,7 +115,7 @@ You MUST respond ONLY in this JSON format:
       body: JSON.stringify({}),
     });
 
-    const data = await response.json();
+    const data = (await response.json()) as { id: string };
     return data.id;
   }
 
@@ -126,7 +142,7 @@ You MUST respond ONLY in this JSON format:
       },
     );
 
-    const data = await response.json();
+    const data = (await response.json()) as { id: string };
     return data.id;
   }
 
@@ -142,7 +158,9 @@ You MUST respond ONLY in this JSON format:
         },
       );
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        status: string;
+      };
 
       if (data.status === 'completed') {
         break;
@@ -162,8 +180,17 @@ You MUST respond ONLY in this JSON format:
       },
     );
 
-    const msgData = await msgResponse.json();
-    const assistantMsg = msgData.data.find((m: any) => m.role === 'assistant');
+    const msgData = (await msgResponse.json()) as {
+      data: Array<{
+        role: string;
+        content?: Array<{
+          text?: {
+            value?: string;
+          };
+        }>;
+      }>;
+    };
+    const assistantMsg = msgData.data.find((m) => m.role === 'assistant');
 
     return assistantMsg?.content?.[0]?.text?.value ?? '';
   }
@@ -177,5 +204,71 @@ You MUST respond ONLY in this JSON format:
       'Content-Type': 'application/json',
       ...(useBeta ? { 'OpenAI-Beta': 'assistants=v2' } : {}),
     };
+  }
+
+  async uploadFileToVectorStore(file: {
+    originalname: string;
+    size: number;
+    buffer: Buffer;
+  }): Promise<{
+    vectorStoreId: string;
+    status: string;
+    fileCount: number;
+  }> {
+    if (!this.vectorStoreId) {
+      throw new InternalServerErrorException(
+        'OPENAI_VECTOR_STORE_ID is not set',
+      );
+    }
+
+    this.logger.log(
+      `Uploading file "${file.originalname}" (${file.size} bytes) to vector store ${this.vectorStoreId}`,
+    );
+
+    try {
+      // Step 1: Create a File object from the buffer
+      const uint8Array = new Uint8Array(file.buffer);
+      const blob = new Blob([uint8Array]);
+      const fileObject = new File([blob], file.originalname);
+
+      // Step 2: Upload the file using the new API
+      await this.client.vectorStores.files.upload(
+        this.vectorStoreId,
+        fileObject,
+      );
+
+      this.logger.log('File uploaded successfully, waiting for processing...');
+
+      // Step 3: Poll the vector store until processing is complete
+      let isProcessing = true;
+      while (isProcessing) {
+        const vectorStore = await this.client.vectorStores.retrieve(
+          this.vectorStoreId,
+        );
+
+        if (
+          vectorStore.status === 'completed' ||
+          vectorStore.file_counts.in_progress === 0
+        ) {
+          isProcessing = false;
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+
+      this.logger.log('File processing completed');
+
+      return {
+        vectorStoreId: this.vectorStoreId,
+        status: 'uploaded_and_indexed',
+        fileCount: 1,
+      };
+    } catch (error) {
+      this.logger.error('Error uploading file to vector store', error);
+      throw new InternalServerErrorException({
+        message: 'Failed to upload file to vector store',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
 }

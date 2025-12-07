@@ -1,0 +1,114 @@
+<div class="rag-upload-container">
+  <app-back-to-home-button></app-back-to-home-button>
+
+  <div class="upload-header">
+    <h1>📤 RAG File Upload</h1>
+    <p class="subtitle">Upload documents to enhance your RAG knowledge base</p>
+  </div>
+
+  <!-- Upload Area -->
+  <div class="upload-section">
+    <div
+      class="drop-zone"
+      [class.dragging]="isDragging"
+      [class.has-file]="selectedFile"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <div *ngIf="!selectedFile" class="drop-zone-content">
+        <div class="upload-icon">📁</div>
+        <h3>Drag & Drop your file here</h3>
+        <p>or</p>
+        <label for="file-input" class="file-input-label">
+          <span>Browse Files</span>
+          <input
+            id="file-input"
+            type="file"
+            (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.txt,.json,.csv"
+            hidden
+          />
+        </label>
+        <p class="file-types">Supported: PDF, DOC, DOCX, TXT, JSON, CSV</p>
+      </div>
+
+      <div *ngIf="selectedFile" class="selected-file">
+        <div class="file-info">
+          <span class="file-icon">{{ getFileIcon(selectedFile.name) }}</span>
+          <div class="file-details">
+            <h4>{{ selectedFile.name }}</h4>
+            <p>{{ formatFileSize(selectedFile.size) }}</p>
+          </div>
+        </div>
+        <button class="remove-btn" (click)="removeFile()" [disabled]="isUploading">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Button -->
+    <button
+      class="upload-btn"
+      [disabled]="!selectedFile || isUploading"
+      (click)="uploadFile()"
+    >
+      <span *ngIf="!isUploading">🚀 Upload to Vector Store</span>
+      <span *ngIf="isUploading" class="uploading">
+        <span class="spinner"></span>
+        Uploading...
+      </span>
+    </button>
+
+    <!-- Messages -->
+    <div *ngIf="errorMessage" class="message error-message">
+      <span class="message-icon">⚠️</span>
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="message success-message">
+      <span class="message-icon">✅</span>
+      {{ successMessage }}
+    </div>
+  </div>
+
+  <!-- Upload History -->
+  <div class="upload-history" *ngIf="uploadHistory.length > 0">
+    <h2>📋 Upload History</h2>
+    <div class="history-list">
+      <div class="history-item" *ngFor="let item of uploadHistory">
+        <div class="history-icon">{{ getFileIcon(item.fileName) }}</div>
+        <div class="history-details">
+          <h4>{{ item.fileName }}</h4>
+          <div class="history-meta">
+            <span class="meta-item">
+              <span class="meta-label">Status:</span>
+              <span class="status-badge" [class.success]="item.status === 'uploaded_and_indexed'">
+                {{ item.status }}
+              </span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-label">Vector Store:</span>
+              <code>{{ item.vectorStoreId }}</code>
+            </span>
+            <span class="meta-item">
+              <span class="meta-label">Time:</span>
+              {{ formatTime(item.timestamp) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Section -->
+  <div class="info-section">
+    <h3>ℹ️ How it works</h3>
+    <ol>
+      <li>Select or drag & drop a document file</li>
+      <li>Click "Upload to Vector Store" to process the file</li>
+      <li>The file will be indexed and added to the RAG knowledge base</li>
+      <li>You can then query the content using the RAG Query page</li>
+    </ol>
+  </div>
+</div>

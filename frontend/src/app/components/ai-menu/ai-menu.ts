@@ -32,8 +32,8 @@ export class AiMenuComponent {
     },
     {
       id: 2,
-      title: 'RAG',
-      description: 'Retrieval Augmented Generation system',
+      title: 'RAG Query',
+      description: 'Query your knowledge base with RAG',
       icon: '🔍',
       route: '/rag',
       color: '#3b82f6',
@@ -41,6 +41,15 @@ export class AiMenuComponent {
     },
     {
       id: 3,
+      title: 'RAG Upload',
+      description: 'Upload documents to your vector store',
+      icon: '📤',
+      route: '/rag-upload',
+      color: '#06b6d4',
+      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+    },
+    {
+      id: 4,
       title: 'Fine Tuning',
       description: 'Train and optimize AI models',
       icon: '⚙️',
@@ -49,7 +58,7 @@ export class AiMenuComponent {
       gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     },
     {
-      id: 4,
+      id: 5,
       title: 'Vector Compare',
       description: 'Compare vector similarity between texts',
       icon: '🧬',
@@ -58,7 +67,7 @@ export class AiMenuComponent {
       gradient: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
     },
     {
-      id: 5,
+      id: 6,
       title: 'Vector Embedding',
       description: 'Generate embeddings from text data',
       icon: '🔢',
