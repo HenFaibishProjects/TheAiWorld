@@ -5,11 +5,13 @@ import { BackToHomeButtonComponent } from './components/back-to-home-button/back
 import { Nav } from './nav/nav';
 import { LoginComponent } from './login/login';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';           
+import { ReactiveFormsModule } from '@angular/forms';   
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [RouterOutlet, NgIf, BackToHomeButtonComponent, Nav, LoginComponent],
+	imports: [FormsModule, ReactiveFormsModule, RouterOutlet, NgIf, BackToHomeButtonComponent, Nav, LoginComponent],
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.css']
 })

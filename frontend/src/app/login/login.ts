@@ -3,11 +3,14 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  imports: [FormsModule, CommonModule],
 })
 export class LoginComponent {
   // Login fields
@@ -46,7 +49,7 @@ export class LoginComponent {
       next: (success) => {
         this.isLoading = false;
         if (success) {
-          this.router.navigate(['/dashboard']); // Change to your main route
+          this.router.navigate(['/ai-menu']);
         } else {
           this.errorMessage = 'Invalid username or password';
         }
