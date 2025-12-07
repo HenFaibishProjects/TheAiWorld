@@ -18,3 +18,8 @@ import { AIUser } from '../login/entities/user.entity';
   exports: [JwtModule, PassportModule],
 })
 export class AuthModule {}
+
+
+
+
+
