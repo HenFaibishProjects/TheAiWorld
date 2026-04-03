@@ -1,25 +1,19 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
 
-@Entity('aiuser')
-export class AIUser {
-  @PrimaryGeneratedColumn()
-  id: number;
 
-  @Column({ unique: true, length: 50 })
-  username: string;
+// @Entity('aiuser')
+// export class AIUser {
+//   @PrimaryGeneratedColumn()
+//   id: number;
 
-  @Column({ length: 255 })
-  password: string;
+//   @Column({ unique: true, length: 50 })
+//   username: string;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+//   @Column({ length: 255 })
+//   password: string;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-}
+//   @CreateDateColumn({ name: 'created_at' })
+//   createdAt: Date;
+
+//   @UpdateDateColumn({ name: 'updated_at' })
+//   updatedAt: Date;
+// }

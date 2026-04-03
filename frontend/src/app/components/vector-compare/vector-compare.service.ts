@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 interface ComparisonResult {
   pair: string;
@@ -13,7 +14,7 @@ interface ComparisonResult {
   providedIn: 'root'
 })
 export class VectorCompareService {
-  private apiUrl = 'https://theaiworld.onrender.com/vector';
+  private apiUrl = `${environment.apiUrl}/vector`;
 
   constructor(private http: HttpClient) {}
 

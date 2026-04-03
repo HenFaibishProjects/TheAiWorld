@@ -13,8 +13,10 @@ import {
 import { ChatService } from './chat.service';
 import { AIConfig } from '../ai/ai.config';
 import { ChatRequestDto } from './dto/chat-request.dto';
+import { Public } from '../auth/public.decorator';
 import type { ChatResponseDto, ModelInfoDto } from './dto/chat-response.dto';
 
+@Public()
 @Controller('chat')
 export class ChatController {
   private readonly logger = new Logger(ChatController.name);
@@ -43,6 +45,14 @@ export class ChatController {
       };
     }
 
+    if (provider === 'deepseek') {
+      return {
+        model: 'deepseek-chat',
+        temperature: 0.3,
+        maxTokens: 60,
+      };
+    }
+
     return {
       model: AIConfig.model,
       temperature: AIConfig.temperature,
@@ -62,6 +72,9 @@ export class ChatController {
       }
       if (provider === 'claude') {
         return await this.chatService.askClaude(message);
+      }
+      if (provider === 'deepseek') {
+        return await this.chatService.askDeepSeek(message);
       }
 
       throw new HttpException(

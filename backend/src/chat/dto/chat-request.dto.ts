@@ -8,6 +8,6 @@ export class ChatRequestDto {
 
   @IsString()
   @IsNotEmpty({ message: 'Provider is required' })
-  @IsIn(['openai', 'claude'], { message: 'Provider must be either "openai" or "claude"' })
+  @IsIn(['openai', 'claude', 'deepseek'], { message: 'Provider must be either "openai", "claude" or "deepseek"' })
   provider: string;
 }

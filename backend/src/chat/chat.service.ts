@@ -8,14 +8,20 @@ export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private encoder: Tiktoken;
   private openaiApiKey: string;
+  private deepseekApiKey: string;
 
   constructor(private readonly ai: AIClient) {
     // Initialize encoder for GPT-4
     this.encoder = encodingForModel('gpt-4');
     this.openaiApiKey = process.env.OPENAI_API_KEY || '';
+    this.deepseekApiKey = process.env.DEEPSEEK_API_KEY || '';
     
     if (!this.openaiApiKey) {
       this.logger.warn('OPENAI_API_KEY not found in environment variables');
+    }
+
+    if (!this.deepseekApiKey) {
+      this.logger.warn('DEEPSEEK_API_KEY not found in environment variables');
     }
     
     this.logger.log('ChatService initialized');
@@ -91,9 +97,35 @@ export class ChatService {
   }
 
   async askOpenAI(message: string): Promise<ChatResponseDto> {
-    if (!this.openaiApiKey) {
+    return this.askGenericOpenAICompatible(
+      'openai',
+      'https://api.openai.com/v1/chat/completions',
+      this.openaiApiKey,
+      'gpt-4o-mini',
+      message
+    );
+  }
+
+  async askDeepSeek(message: string): Promise<ChatResponseDto> {
+    return this.askGenericOpenAICompatible(
+      'deepseek',
+      'https://api.deepseek.com/v1/chat/completions',
+      this.deepseekApiKey,
+      'deepseek-chat',
+      message
+    );
+  }
+
+  private async askGenericOpenAICompatible(
+    provider: string,
+    url: string,
+    apiKey: string,
+    model: string,
+    message: string
+  ): Promise<ChatResponseDto> {
+    if (!apiKey) {
       throw new HttpException(
-        'OpenAI API key not configured',
+        `${provider.toUpperCase()} API key not configured`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -102,22 +134,20 @@ export class ChatService {
       // Count prompt tokens
       const promptTokens = this.countTokens(message);
 
-      const response = await fetch(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.openaiApiKey}`,
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini',
-            temperature: 0.3,
-            max_tokens: 60,
-            messages: [
-              {
-                role: 'user',
-                content: `
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.3,
+          max_tokens: 60,
+          messages: [
+            {
+              role: 'user',
+              content: `
 Return ONLY a valid JSON object.
 No explanations. No markdown. No text before or after the JSON.
 
@@ -136,19 +166,18 @@ Where:
 User message:
 "${message}"
             `,
-              },
-            ],
-          }),
-        },
-      );
+            },
+          ],
+        }),
+      });
 
       const data = await response.json();
-      this.logger.log('Received response from OpenAI');
+      this.logger.log(`Received response from ${provider}`);
 
       if (!response.ok) {
-        this.logger.error('OpenAI API Error:', data);
+        this.logger.error(`${provider.toUpperCase()} API Error:`, data);
         throw new HttpException(
-          data?.error?.message || 'OpenAI API failed',
+          data?.error?.message || `${provider.toUpperCase()} API failed`,
           HttpStatus.BAD_GATEWAY,
         );
       }
@@ -163,7 +192,7 @@ User message:
 
       if (!jsonMatch) {
         return {
-          error: 'No JSON found in OpenAI response',
+          error: `No JSON found in ${provider} response`,
           raw: text,
           promptTokens,
           responseTokens,
@@ -199,9 +228,9 @@ User message:
 
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error in askOpenAI: ${errorMessage}`);
+      this.logger.error(`Error in askGenericOpenAICompatible for ${provider}: ${errorMessage}`);
       throw new HttpException(
-        'Failed to get response from OpenAI',
+        `Failed to get response from ${provider}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

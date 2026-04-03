@@ -5,6 +5,7 @@ import { FtResponseDto } from './ft-response.dto';
 import { FormsModule } from '@angular/forms';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-finetune',
@@ -19,7 +20,7 @@ export class Finetune {
   loading = false;
   error: string | null = null;
   result: FtResponseDto | null = null;
-  private apiUrl = 'https://theaiworld.onrender.com/ft';
+  private apiUrl = `${environment.apiUrl}/ft`;
 
   constructor(private http: HttpClient) {}
 

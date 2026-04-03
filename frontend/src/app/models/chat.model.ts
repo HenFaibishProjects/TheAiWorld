@@ -28,7 +28,7 @@ export interface ModelPricing {
   outputPrice: number;
 }
 
-export type AIProvider = 'openai' | 'claude';
+export type AIProvider = 'openai' | 'claude' | 'deepseek';
 
 export interface ChatRequest {
   message: string;

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { BackToHomeButtonComponent } from '../back-to-home-button/back-to-home-button';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class VectorCompareComponent {
     this.comparisonError = '';
     this.comparisonResult = null;
 
-    this.http.post('https://theaiworld.onrender.com/embed/openai/compare', {
+    this.http.post(`${environment.apiUrl}/embed/openai/compare`, {
       word1: this.word1,
       word2: this.word2
     }).subscribe({

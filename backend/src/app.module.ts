@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatModule } from './chat/chat.module';
 import { RagModule } from './rag/rag.module';
 import { LoginModule } from './login/login.module';
@@ -20,20 +19,10 @@ import { FtController } from './fineTuning/ft.controller';
 import { FtService } from './fineTuning/ft.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { AIUser } from './login/entities/user.entity';
 
 
 @Module({
   imports: [
- TypeOrmModule.forRoot({
-  type: 'postgres',
-  url: process.env.DATABASE_URL,
-  entities: [AIUser],
-  synchronize: true,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-}),
     AuthModule,
     ChatModule,
     RagModule,

@@ -24,11 +24,11 @@ export class LoginController {
 
     try {
       const result = await this.loginService.validateUser(loginDto);
-      
+
       if (!result.success) {
         this.logger.warn(`Login failed for username: ${loginDto.username}`);
       }
-      
+
       return result;
     } catch (error) {
       const errorMessage =
@@ -49,18 +49,5 @@ export class LoginController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  @Public()
-  @Post('register')
-  async register(@Body() body: { username: string; password: string }) {
-    this.logger.log(`Registration request for username: ${body.username}`);
-    const user = await this.loginService.createUser(body.username, body.password);
-    return {
-      success: true,
-      message: 'User created successfully',
-      userId: user.id,
-      username: user.username,
-    };
   }
 }

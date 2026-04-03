@@ -39,7 +39,11 @@ export class AuthService {
     }).pipe(
       tap(response => {
         if (response.success && response.accessToken) {
+          console.log('🎉 [AUTH SERVICE] Login successful');
+          console.log('🎫 [AUTH SERVICE] Token received:', response.accessToken.substring(0, 20) + '...');
           this.setToken(response.accessToken);
+          console.log('💾 [AUTH SERVICE] Token stored in localStorage');
+          console.log('💾 [AUTH SERVICE] Token retrieved from storage:', this.getToken()?.substring(0, 20) + '...');
           if (response.username) {
             this.setUsername(response.username);
           }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface RagAnswerDetail {
   answer: string;
@@ -18,7 +19,7 @@ export interface RagResponse {
   providedIn: 'root'
 })
 export class RagService {
-  private apiUrl = 'https://theaiworld.onrender.com/rag';
+  private apiUrl = `${environment.apiUrl}/rag`;
 
   constructor(private http: HttpClient) {}
 

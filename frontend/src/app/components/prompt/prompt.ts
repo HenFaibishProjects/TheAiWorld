@@ -41,7 +41,8 @@ export class PromptComponent implements OnInit {
     'gpt35': { name: 'GPT-3.5 Turbo', inputPrice: 0.0015, outputPrice: 0.002 },
     'claude-opus': { name: 'Claude 3 Opus', inputPrice: 0.015, outputPrice: 0.075 },
     'claude-sonnet': { name: 'Claude 3.5 Sonnet', inputPrice: 0.003, outputPrice: 0.015 },
-    'claude-haiku': { name: 'Claude 3 Haiku', inputPrice: 0.00025, outputPrice: 0.00125 }
+    'claude-haiku': { name: 'Claude 3 Haiku', inputPrice: 0.00025, outputPrice: 0.00125 },
+    'deepseek-v3': { name: 'DeepSeek-V3', inputPrice: 0.00014, outputPrice: 0.00028 }
   };
 
   modelKeys: string[] = Object.keys(this.modelPricing);
@@ -136,7 +137,11 @@ export class PromptComponent implements OnInit {
     // Return a human-friendly provider label. If you want a clearer
     // hint when no modelName is available, include a small hint but do
     // not overwrite the actual `modelName` property.
-    const label = this.selectedProvider === 'openai' ? 'OpenAI' : 'Claude';
+    let label = 'Unknown';
+    if (this.selectedProvider === 'openai') label = 'OpenAI';
+    else if (this.selectedProvider === 'claude') label = 'Claude';
+    else if (this.selectedProvider === 'deepseek') label = 'DeepSeek';
+
     if (!this.modelName) {
       return `${label} (no model loaded)`;
     }
