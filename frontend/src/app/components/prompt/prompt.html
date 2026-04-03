@@ -131,11 +131,12 @@
 
   <!-- Cost Simulator Component -->
   <app-cost-simulator
-    [promptTokens]="tokenUsage.prompt"
-    [responseTokens]="tokenUsage.response"
-    [totalTokens]="tokenUsage.total"
+    [promptTokens]="tokenUsage?.prompt || 0"
+    [responseTokens]="tokenUsage?.response || 0"
+    [totalTokens]="tokenUsage?.total || 0"
     [modelPricing]="modelPricing"
     [modelKeys]="modelKeys"
     [calculatedCosts]="calculatedCosts">
   </app-cost-simulator>
 </div>
+

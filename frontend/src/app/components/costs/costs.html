@@ -7,22 +7,49 @@
     </div>
   </div>
 
-  <ng-container *ngIf="(promptTokens || responseTokens) && (promptTokens + responseTokens) > 0; else emptyState">
+  <div class="cost-legend">
+    <span class="legend-title">Price Reference Tracker: </span>
+    <span class="legend-item"><span class="color-box cheap"></span> Economic</span>
+    <span class="legend-item"><span class="color-box moderate"></span> Balanced</span>
+    <span class="legend-item"><span class="color-box high"></span> Enterprise</span>
+    <span class="legend-item"><span class="color-box premium"></span> Premium</span>
+  </div>
+
+  <ng-container>
+    
+    <div class="cost-filters">
+      <input type="text" [(ngModel)]="filterModel" placeholder="Filter by Model Name..." class="form-input filter-input" />
+      <input type="number" [(ngModel)]="filterMaxInputPrice" placeholder="Max Input $ / 1M" class="form-input filter-input" />
+      <input type="number" [(ngModel)]="filterMaxEstCost" placeholder="Max Estimated Cost $" class="form-input filter-input" />
+    </div>
+
     <div class="cost-table-wrap">
       <table class="cost-table">
         <thead>
           <tr>
-            <th>Model</th>
-            <th>Input $ / 1k</th>
-            <th>Output $ / 1k</th>
-            <th class="cost-col">Estimated Cost</th>
+            <th (click)="toggleSort('name')" class="sortable">
+              Model
+              <span class="sort-icon" *ngIf="sortKey === 'name'">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
+            </th>
+            <th (click)="toggleSort('input')" class="sortable">
+              Input $ / 1M
+              <span class="sort-icon" *ngIf="sortKey === 'input'">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
+            </th>
+            <th (click)="toggleSort('output')" class="sortable">
+              Output $ / 1M
+              <span class="sort-icon" *ngIf="sortKey === 'output'">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
+            </th>
+            <th (click)="toggleSort('cost')" class="sortable cost-col" style="min-width: 250px;">
+              {{ isExample ? 'Example Cost (1k IN + 1k OUT)' : 'Actual Cost' }}
+              <span class="sort-icon" *ngIf="sortKey === 'cost'">{{ sortDir === 'asc' ? '↑' : '↓' }}</span>
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let key of (modelKeys || [])">
+          <tr *ngFor="let key of filteredKeys">
             <td class="model-name">{{ modelPricing[key]?.name || key }}</td>
-            <td class="mono">{{ modelPricing[key]?.inputPrice || 0 | number:'1.4-6' }}</td>
-            <td class="mono">{{ modelPricing[key]?.outputPrice || 0 | number:'1.4-6' }}</td>
+            <td class="mono cost-standard">{{ modelPricing[key]?.inputPrice || 0 | currency:'USD':'symbol':'1.2-4' }}</td>
+            <td class="mono cost-standard">{{ modelPricing[key]?.outputPrice || 0 | currency:'USD':'symbol':'1.2-4' }}</td>
             <td class="cost-col">
               <div class="cost-row">
                 <div class="cost-value">
@@ -35,7 +62,7 @@
                 <div class="cost-bar" aria-hidden="true">
                   <div class="cost-bar-fill"
                        [style.width.%]="percentFor(key)"
-                       [style.background]="barColor(key)">
+                       [style.background]="costColor(key)">
                   </div>
                 </div>
               </div>
@@ -48,8 +75,4 @@
     <div class="model-actions">
     </div>
   </ng-container>
-
-  <ng-template #emptyState>
-    <div class="empty-state">No token data yet — send a prompt to see estimated costs.</div>
-  </ng-template>
 </div>
