@@ -44,7 +44,7 @@ export class OpenAIEmbeddingClient {
               content: `Explain in 1-2 short sentences why "${word1}" and "${word2}" have a similarity score of ${(similarityScore * 100).toFixed(1)}%. Focus on their relationship and meaning. Do not mention cosine, vectors, embeddings, or models. Just explain why they are similar or different in simple terms.`
             }
           ],
-          max_tokens: 100,
+          max_tokens: 500,
           temperature: 0.7
         })
       });

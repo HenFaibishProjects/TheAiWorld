@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,7 +22,8 @@ export class EmbeddingComponent {
 
   constructor(
     private embeddingService: EmbeddingService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async generateEmbedding() {
@@ -43,6 +44,7 @@ export class EmbeddingComponent {
       this.result = null;
     } finally {
       this.loading = false;
+      this.cdr.detectChanges(); // Force UI update if running outside Angular zone
     }
   }
 

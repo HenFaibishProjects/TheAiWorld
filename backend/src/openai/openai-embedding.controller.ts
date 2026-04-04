@@ -1,7 +1,9 @@
 import { Controller, Post, Body } from "@nestjs/common";
 import { OpenAIEmbeddingService } from "./openai-embedding.service";
 import { VectorUtilsService } from "src/vector/vector-utils.service";
+import { Public } from "../auth/public.decorator";
 
+@Public()
 @Controller("embed/openai")
 export class OpenAIEmbeddingController  {
   constructor(private readonly embeddingService: OpenAIEmbeddingService,

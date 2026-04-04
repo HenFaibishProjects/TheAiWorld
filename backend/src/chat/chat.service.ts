@@ -143,7 +143,7 @@ export class ChatService {
         body: JSON.stringify({
           model,
           temperature: 0.3,
-          max_tokens: 60,
+          max_tokens: 500,
           messages: [
             {
               role: 'user',
