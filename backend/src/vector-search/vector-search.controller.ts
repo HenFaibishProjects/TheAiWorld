@@ -2,6 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { VectorSearchService } from './vector-search.service';
 import { Public } from '../auth/public.decorator';
 import { Post, Body } from '@nestjs/common';
+import { AskResponseDto } from './dto/ask-response.dto';
 
 @Controller('vector-search')
 export class VectorSearchController {
@@ -15,7 +16,7 @@ export class VectorSearchController {
 
 @Public()
 @Post('ask')
-async ask(@Body('question') question: string) {
+async ask(@Body('question') question: string): Promise<AskResponseDto> {
   return this.vectorSearchService.askQuestion(question);
 }
 

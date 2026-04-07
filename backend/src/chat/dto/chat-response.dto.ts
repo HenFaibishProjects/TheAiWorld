@@ -5,8 +5,8 @@ export interface TokenUsage {
 }
 
 export interface ChatResponseDto {
+  answer?: string;
   subject?: string;
-  'what to seach in youtube'?: string;
   error?: string;
   raw?: string;
   details?: string;
