@@ -165,18 +165,16 @@ private evaluateResults(results: any[]): { filteredResults: any[]; shouldStop: b
 }
 
 async askQuestion(question: string) {
-const formattedVector = await this.createQueryVector(question);
-
-const results = await this.findClosestVectors(formattedVector);
-
-const { filteredResults, shouldStop } = this.evaluateResults(results);
-
-if (shouldStop) {
-  return {
-  answer: "I don't know",
-  results: [],
-};
-}
+  const startTime = Date.now();
+ const formattedVector = await this.createQueryVector(question);
+ const results = await this.findClosestVectors(formattedVector);
+ const { filteredResults, shouldStop } = this.evaluateResults(results);
+    if (shouldStop) {
+      return {
+      answer: "I don't know",
+      results: [],
+    };
+  }
   const context = this.buildContext(filteredResults);
 if (this.isEmptyContext(context)) {
  return {
@@ -187,12 +185,23 @@ if (this.isEmptyContext(context)) {
 const prompt = await this.createPrompt(context, question);
 const aiResponse = await this.chatService.askOpenAI(prompt);
 console.log('RAW AI RESPONSE:', aiResponse);
+const latency = Date.now() - startTime;
 return {
   answer: aiResponse?.answer || aiResponse?.['the answer'] || "I don't know",
   results: results.map(r => ({
     content: r.v_content || r.content,
     distance: Number(r.distance),
   })),
+  debug: {
+    question,
+    chunksSent: filteredResults.length,
+    tokens: {
+            prompt: aiResponse?.promptTokens,
+            response: aiResponse?.responseTokens,
+            total: aiResponse?.totalTokens,
+},
+    latencyMs: latency,
+  },
 };
   } 
 }

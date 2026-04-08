@@ -16,14 +16,30 @@ export class AskResultDto {
   distance: number;
 }
 
-export class AskDebugDto {
-  @IsOptional()
+export class AskTokensDto {
   @IsNumber()
-  bestDistance?: number;
+  prompt: number;
 
-  @IsOptional()
   @IsNumber()
-  resultCount?: number;
+  response: number;
+
+  @IsNumber()
+  total: number;
+}
+
+export class AskDebugDto {
+  @IsString()
+  question: string;
+
+  @IsNumber()
+  chunksSent: number;
+
+  @ValidateNested()
+  @Type(() => AskTokensDto)
+  tokens: AskTokensDto;
+
+  @IsNumber()
+  latencyMs: number;
 }
 
 export class AskResponseDto {
